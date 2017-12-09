@@ -36,7 +36,9 @@ void hashNode::addValue(string v){
 	values[currSize] = v;
 	currSize++;
 
-	if(currSize==valuesSize) dblArray();
+	if(currSize==valuesSize){
+		dblArray();
+	}
 }
 
 void hashNode::dblArray(){
@@ -44,17 +46,17 @@ void hashNode::dblArray(){
 
 	for(int i=0;i<valuesSize;i++){
 		tmp[i] = values[i];
-		delete values[i];
+		//delete values[i];
 	}
-
-	delete values;
 
 	valuesSize *= 2;
 	values = tmp;
 }
 
 string hashNode::getRandValue(){
-	if (currSize==0) return "";
+	if (currSize==0){
+		return "";
+	}
 	else{
 		return values[rand()%currSize];
 	}
