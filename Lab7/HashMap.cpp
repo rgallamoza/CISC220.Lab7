@@ -30,31 +30,14 @@ hashMap::hashMap(bool hash1,bool coll1){
 }
 
 void hashMap::addKeyValue(string k,string v){
-	int hash = getIndex(k);
+	int index = getIndex(k);
 
-	if(map[hash]==NULL){
-		map[hash] = new hashNode(k,v);
+	if(map[index]==NULL){
+		map[index] = new hashNode(k,v);
 		numKeys++;
 	}
-	else if(map[hash]->keyword==k){
-		map[hash]->addValue(v);
-	}
 	else{
-		int cHash;
-		if(c1){
-			cHash = collHash1(hash,k);
-		}
-		else{
-			cHash = collHash2(hash,k);
-		}
-
-		if(map[cHash]==NULL){
-			map[cHash] = new hashNode(k,v);
-			numKeys++;
-		}
-		else{
-			map[cHash]->addValue(v);
-		}
+		map[index]->addValue(v);
 	}
 
 	if(numKeys>=0.7*mapSize){
@@ -63,38 +46,47 @@ void hashMap::addKeyValue(string k,string v){
 }
 
 int hashMap::getIndex(string k){
+	int index;
+
 	if(h1){
-		return calcHash(k);
+		index = calcHash(k);
 	}
 	else{
-		return calcHash2(k);
+		index = calcHash2(k);
 	}
-}
 
-int hashMap::calcHash(string k){	//Hash is sum of first 3 characters as base-37 integers
-	string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ";
-	int hash = 0;
-
-	for(int i=0;i<3&&i<k.length();i++){
-		if(!isalnum(k[i])){
-			continue;
+	if(map[index]==NULL||map[index]->keyword==k){
+		return index;
+	}
+	else{
+		collisionct1++;
+		if(c1){
+			return collHash1(index,k);
 		}
 		else{
-			hash += pow(37,i)*chars.find(k[i]);
+			return collHash2(index,k);
 		}
 	}
-
-	return hash%mapSize;
 }
 
-int hashMap::calcHash2(string k){	//Hash based on sum of ASCII values
-	int hash = 0;
+int hashMap::calcHash(string k){	//Hash function treats first 3 characters as base-256 integers (based on ASCII values)
+	int index = 0;
 
-	for(int i=0;i<k.length();i++){
-		hash += int(k[i]);
+	for(int i=0;i<3&&i<k.length();i++){
+		index += pow(256,i)*int(k[i]);
 	}
 
-	return hash%mapSize;
+	return index%mapSize;
+}
+
+int hashMap::calcHash2(string k){	//Hash function finds sum of ASCII values
+	int index = 0;
+
+	for(int i=0;i<k.length();i++){
+		index += int(k[i]);
+	}
+
+	return index%mapSize;
 }
 
 void hashMap::getClosestPrime(){
@@ -142,7 +134,7 @@ bool isPrime(int x){	//Helper function for finding closest prime
 
 void hashMap::reHash(){
 	int initSize = mapSize;
-	int newHash;
+	int newIndex;
 
 	getClosestPrime();
 
@@ -155,61 +147,47 @@ void hashMap::reHash(){
 
 	for(int i=0;i<initSize;i++){
 		if(tmp[i]!=NULL){
-			newHash = getIndex(tmp[i]->keyword);
-			if(map[newHash]==NULL){
-				map[newHash] = tmp[i];
-			}
-			else if(c1){
-				int cHash = collHash1(newHash,tmp[i]->keyword);
-				map[cHash] = tmp[i];
-			}
-			else{
-				int cHash = collHash2(newHash,tmp[i]->keyword);
-				map[cHash] = tmp[i];
-			}
+			newIndex = getIndex(tmp[i]->keyword);
+			map[newIndex] = tmp[i];
 		}
 	}
 }
 
 int hashMap::collHash1(int h,string k){	//Linear probing
-	int hash = h;
+	int index = h;
 
-	while(map[hash]!=NULL){
-		if(map[hash]->keyword==k){
-			break;
-		}
-
-		collisionct1++;
-		if(hash==mapSize-1){
-			hash = 0;
-		}
-		else{
-			hash++;
-		}
-	}
-
-	return hash;
-}
-
-int hashMap::collHash2(int h,string k){	//Quadratic probing
-	int hash = h;
-	int i = 0;
-
-	while(map[hash]!=NULL){
-		if(map[hash]->keyword==k){
+	while(map[index]!=NULL){
+		if(map[index]->keyword==k){
 			break;
 		}
 
 		collisionct2++;
-		hash -= (i*i);
-		i++;
-		hash += (i*i);
-		while(hash>=mapSize){
-			hash -= mapSize;
+		if(index==mapSize-1){
+			index = 0;
+		}
+		else{
+			index++;
 		}
 	}
 
-	return hash;
+	return index;
+}
+
+int hashMap::collHash2(int h,string k){	//Quadratic probing
+	int index = h;
+	int i = 0;
+
+	while(map[index]!=NULL){
+		if(map[index]->keyword==k){
+			break;
+		}
+
+		collisionct2++;
+		i++;
+		index = (h+(i*i))%mapSize;
+	}
+
+	return index;
 }
 
 int hashMap::findKey(string k){
@@ -222,7 +200,16 @@ int hashMap::findKey(string k){
 }
 
 void hashMap::printMap(){
+	cout << "Map:" << endl;
 	for(int i=0;i<mapSize;i++){
-		if(map[i]!=NULL) cout << map[i]->keyword<<endl;
+		if(map[i]!=NULL) map[i]->printHNode();
 	}
+	cout << endl;
+	cout << "First keyword: " << first << endl;
+	cout << "numKeys: " << numKeys << endl;
+	cout << "mapSize: " << mapSize << endl;
+	cout << "h1: " << h1 << endl;
+	cout << "c1: " << c1 << endl;
+	cout << "collisionct1: " << collisionct1 << endl;
+	cout << "collisionct2: " << collisionct2 << endl;
 }

@@ -1,0 +1,47 @@
+Ryan Gallamoza
+Cisc220 - Lab 7 Comments
+****************************************************************************************************
+Hash Function 1:
+Converts the first 3 characters in the given string to base-256 (based on ASCII), and mods by mapSize
+e.g. "Computer" = [(256^0)*67 + (256^1)*111 + (256^2)*109] % mapSize
+
+Hash Function 2:
+Sums the ASCII values of each character in the given string, and mods the result by the mapSize.
+
+Collision Function 1:
+Linear probing - looks at next index in the map array until a NULL or a matching keyword is found.
+
+Collision Function 2:
+Quadratic probing - looks at index (h(k)+i^2)%mapSize, where i depends on the # of iterations done,
+until a NULL or a matching keyword is found.
+****************************************************************************************************
+Collision Counts:
+HashFunc 1, CollisionFunc 1
+collisionct1: 7995
+collisionct2: 102088
+
+HashFunc 1, CollisionFunc 2
+collisionct1: 8090
+collisionct2: 37785
+
+HashFunc 2, CollisionFunc 1
+collisionct1: 8321
+collisionct2: 5704734
+
+HashFunc 2, CollisionFunc 2
+collisionct1: 8306
+collisionct2: 183206
+****************************************************************************************************
+Favorite phrases:
+Up over and with hops and a quick Santy Claus hat came without stop
+
+Santa could sprain both your shoes. You dirty old Once-ler
+
+Today is waiting. Waiting for your mother will show up on the days when they ran out.
+
+Whole families of the tree fall.
+
+My name Buxbaum or a boat.
+
+Thank you, in his heart didn't show up his pants.
+

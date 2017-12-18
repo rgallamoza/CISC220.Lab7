@@ -46,7 +46,6 @@ void hashNode::dblArray(){
 
 	for(int i=0;i<valuesSize;i++){
 		tmp[i] = values[i];
-		//delete values[i];
 	}
 
 	valuesSize *= 2;
@@ -60,4 +59,12 @@ string hashNode::getRandValue(){
 	else{
 		return values[rand()%currSize];
 	}
+}
+
+void hashNode::printHNode(){
+	cout << keyword << ":";
+	for(int i=0;i<currSize;i++){
+		cout << values[i] << ",";
+	}
+	cout << endl;
 }

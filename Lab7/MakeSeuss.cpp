@@ -19,6 +19,7 @@ makeSeuss::makeSeuss(string f1,string f2,bool h1, bool c1) {
 	fn = f1;
 	readFile();
 	writeFile();
+	ht->printMap(); //did this to find collision counts
 }
 
 void makeSeuss::readFile() {
